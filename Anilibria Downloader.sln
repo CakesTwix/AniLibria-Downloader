@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anilibria Downloader", "Anilibria Downloader\Anilibria Downloader.csproj", "{D6159B5B-0EB3-4287-8106-92851A89FC37}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6159B5B-0EB3-4287-8106-92851A89FC37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6159B5B-0EB3-4287-8106-92851A89FC37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6159B5B-0EB3-4287-8106-92851A89FC37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6159B5B-0EB3-4287-8106-92851A89FC37}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FF0FD15-AD80-4C79-B468-7F9DCE5BB4A5}
+	EndGlobalSection
+EndGlobal
