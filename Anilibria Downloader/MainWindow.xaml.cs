@@ -32,7 +32,7 @@ namespace Anilibria_Downloader
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.FileName = "cmd.exe";
-            p.StartInfo.Arguments = "/C ffmpeg -i http://" + hls + m3u8 + " -y -c copy file:" + NameTitleEN.Replace(" ","_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4";
+            p.StartInfo.Arguments = "/C ffmpeg -i http://" + hls + m3u8 + " -n -c copy file:" + NameTitleEN.Replace(" ","_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4";
             p.Start();
             p.Close();
             // Read the output stream first and then wait.
@@ -141,7 +141,7 @@ namespace Anilibria_Downloader
             JArray qqq = JArray.Parse(json2);
             if (qqq.Count != 0)
             {
-                //Console.WriteLine(qqq.ToString());
+                Console.WriteLine(qqq.ToString());
                 Series.Items.Clear();
                 SearchComboBox.Items.Clear();
                 NameTitle = qqq[0]["names"]["ru"].ToString();
@@ -156,9 +156,9 @@ namespace Anilibria_Downloader
                 bitmap.UriSource = new Uri("https://www.anilibria.tv" + qqq[0]["poster"]["url"]);
                 bitmap.EndInit();
                 ImageTitle.Source = bitmap;
-                for (int i = 0; i <= (int)qqq[0]["type"]["series"]; i++)
+                for (int i = 1; i <= (int)qqq[0]["player"]["series"]["last"]; i++)
                 {
-                    Series.Items.Add(i+1);
+                    Series.Items.Add(i);
                 }
                 QualityComboBox.Items.Clear();
                 if (qqq[0]["player"]["playlist"]["1"]["hls"]["sd"].ToString() != "") QualityComboBox.Items.Add("SD");
@@ -176,7 +176,7 @@ namespace Anilibria_Downloader
             wc.Encoding = System.Text.Encoding.UTF8;
             string json2 = wc.DownloadString("https://api.anilibria.tv/v2/searchTitles" + "?search=" + NameTitle);
             JArray qqq = JArray.Parse(json2);
-            ProgressDownload.IsIndeterminate = true;
+
             if (qqq.Count != 0)
             {
 
@@ -191,7 +191,7 @@ namespace Anilibria_Downloader
                     qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString());
                 
             }
-            ProgressDownload.IsIndeterminate = false;
+
                
         }
 
