@@ -32,6 +32,7 @@
                             <Label Content="Серия:" HorizontalAlignment="Left" Margin="6,9,0,0" VerticalAlignment="Top" />
                             <Label Content="Качество:" HorizontalAlignment="Left" Margin="159,9,0,0" VerticalAlignment="Top" />
                             <ComboBox x:Name="QualityComboBox" HorizontalAlignment="Left" Margin="162,39,0,0" VerticalAlignment="Top" Width="120" />
+                            <ProgressBar x:Name="progressSeries" Height="11" Margin="6,70,13,0" VerticalAlignment="Top" MinHeight="17" MinWidth="443"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Торрент" Margin="8,126,1,0" MinWidth="478" MinHeight="253">

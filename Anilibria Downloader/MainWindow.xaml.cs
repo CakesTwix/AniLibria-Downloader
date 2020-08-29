@@ -2,16 +2,80 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace Anilibria_Downloader
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
+    public class ProcessAsync
+    {
 
+        private string _fileName;
+        private string _arguments;
+
+        public ProcessAsync(string fileName, string arguments)
+        {
+            _fileName = fileName;
+            _arguments = arguments;
+        }
+
+        public async Task<string> Run(StringBuilder stdin = null)
+        {
+
+            // Initialise
+            var cmd = new Process();
+            cmd.StartInfo.FileName = _fileName;
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.StartInfo.Arguments = _arguments;
+
+            // Create a task that waits for the Process to finish
+            var cmdExited = new CmdExitedTaskWrapper();
+            cmd.EnableRaisingEvents = true;
+            cmd.Exited += cmdExited.EventHandler;
+
+            // Start process
+            cmd.Start();
+
+            // Pass any stdin if necessary
+            if (stdin != null)
+            {
+                await cmd.StandardInput.WriteAsync(stdin.ToString());
+                await cmd.StandardInput.FlushAsync();
+                cmd.StandardInput.Close();
+            }
+
+            // Wait for process to end and return stdout
+            await cmdExited.Task;
+            return cmd.StandardOutput.ReadToEnd();
+
+        }
+
+        /// <remarks>
+        /// We can't wait on a Process directly, so create a wrapper for a
+        /// task that waits for the <see cref="Process.Exited"/> Event to be
+        /// raised.
+        /// </remarks>
+        private class CmdExitedTaskWrapper
+        {
+
+            private TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
+
+            public void EventHandler(object sender, EventArgs e)
+            {
+                _tcs.SetResult(true);
+            }
+
+            public Task Task => _tcs.Task;
+
+        }
+
+    }
     public partial class MainWindow : Window
     {
         public string NameTitle = "";
@@ -23,21 +87,16 @@ namespace Anilibria_Downloader
             //Программно нажимаю на кнопку рандома
             RandomTitle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
-        public void Downloader(string hls, string m3u8)
+
+        public void ChangeImage(string poster)
         {
-            // Start the child process.
-            Process p = new Process();
-            p.StartInfo.CreateNoWindow = true;
-            // Redirect the output stream of the child process.
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = "cmd.exe";
-            p.StartInfo.Arguments = "/C ffmpeg -i http://" + hls + m3u8 + " -n -c copy file:" + NameTitleEN.Replace(" ","_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4";
-            p.Start();
-            p.Close();
-            // Read the output stream first and then wait.
-            //return p.StandardOutput.ReadToEnd();
-    }
+            //Меняем картинку
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri("https://www.anilibria.tv" + poster);
+            bitmap.EndInit();
+            ImageTitle.Source = bitmap;
+        }
         public JObject GetRandom()
         {
             try
@@ -88,12 +147,7 @@ namespace Anilibria_Downloader
                     {
                         Series.Items.Add(i);
                     }
-                    //Меняем картинку
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri("https://www.anilibria.tv" + qqq["poster"]["url"]);
-                    bitmap.EndInit();
-                    ImageTitle.Source = bitmap;
+                    ChangeImage(qqq["poster"]["url"].ToString());
                     Series.SelectedIndex = 0;
                     QualityComboBox.SelectedIndex = 0;
                 }
@@ -150,12 +204,7 @@ namespace Anilibria_Downloader
                 String Content = "Статус: " + qqq[0]["status"]["string"].ToString() + "\n";
                 Content += qqq[0]["description"] + "\n";
                 Opicanie.Text = Content.ToString();
-                //Меняем картинку
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri("https://www.anilibria.tv" + qqq[0]["poster"]["url"]);
-                bitmap.EndInit();
-                ImageTitle.Source = bitmap;
+                ChangeImage(qqq["poster"]["url"].ToString());
                 for (int i = 1; i <= (int)qqq[0]["player"]["series"]["last"]; i++)
                 {
                     Series.Items.Add(i);
@@ -170,7 +219,7 @@ namespace Anilibria_Downloader
             
 
         }
-        public void Download(object sender, RoutedEventArgs e)
+        public async void Download(object sender, RoutedEventArgs e)
         {
             WebClient wc = new System.Net.WebClient();
             wc.Encoding = System.Text.Encoding.UTF8;
@@ -179,17 +228,12 @@ namespace Anilibria_Downloader
 
             if (qqq.Count != 0)
             {
+                progressSeries.IsIndeterminate = true;
+                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i http://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4");
+                Console.WriteLine(await p1.Run());
+                progressSeries.IsIndeterminate = false;
+                Console.WriteLine("Ntcn");
 
-                /*Console.WriteLine(
-                    Series.SelectedItem.ToString() + " "
-                    + QualityComboBox.SelectedValue + " "
-                    + qqq[0]["player"]["hosts"]["hls"].ToString() + " "
-                    + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()]);
-                    */
-                
-                Downloader(qqq[0]["player"]["hosts"]["hls"].ToString(),
-                    qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString());
-                
             }
 
                
