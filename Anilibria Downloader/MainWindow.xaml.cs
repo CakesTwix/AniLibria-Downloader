@@ -204,7 +204,7 @@ namespace Anilibria_Downloader
                 String Content = "Статус: " + qqq[0]["status"]["string"].ToString() + "\n";
                 Content += qqq[0]["description"] + "\n";
                 Opicanie.Text = Content.ToString();
-                ChangeImage(qqq["poster"]["url"].ToString());
+                ChangeImage(qqq[0]["poster"]["url"].ToString());
                 for (int i = 1; i <= (int)qqq[0]["player"]["series"]["last"]; i++)
                 {
                     Series.Items.Add(i);
@@ -229,10 +229,11 @@ namespace Anilibria_Downloader
             if (qqq.Count != 0)
             {
                 progressSeries.IsIndeterminate = true;
+                Download_Name.IsEnabled = false;
                 var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i http://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4");
                 Console.WriteLine(await p1.Run());
+                Download_Name.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
-                Console.WriteLine("Ntcn");
 
             }
 

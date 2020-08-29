@@ -27,7 +27,7 @@
                 <Grid Background="#FFE5E5E5">
                     <GroupBox Header="Прямое скачивание" Height="122" Margin="8,7,0,0" VerticalAlignment="Top" MinWidth="478">
                         <Grid Height="103" VerticalAlignment="Top">
-                            <Button Content="Скачать серию" HorizontalAlignment="Right" Margin="0,0,55,43" VerticalAlignment="Bottom" Width="92" Height="20" Click="Download"/>
+                            <Button Content="Скачать серию" HorizontalAlignment="Right" Margin="0,0,55,43" VerticalAlignment="Bottom" Width="92" Height="20" Click="Download" Name="Download_Name"/>
                             <ComboBox x:Name="Series" HorizontalAlignment="Left" Margin="6,39,0,0" VerticalAlignment="Top" Width="120" />
                             <Label Content="Серия:" HorizontalAlignment="Left" Margin="6,9,0,0" VerticalAlignment="Top" />
                             <Label Content="Качество:" HorizontalAlignment="Left" Margin="159,9,0,0" VerticalAlignment="Top" />
