@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:v="clr-namespace:System;assembly=mscorlib">
+    <v:String x:Key="SearchButton">Search</v:String>
+
+    <v:String x:Key="LanguageMenuItem">Language</v:String>
+    <v:String x:Key="AboutMenu">About</v:String>
+    <v:String x:Key="SettingsMenu">Settings</v:String>
+    <v:String x:Key="RandomButton">Random Anime</v:String>
+
+    <v:String x:Key="DescriptionTabItem">Description</v:String>
+    <v:String x:Key="DownloadTabItem">Download</v:String>
+    <!-- Direct download -->
+    <v:String x:Key="DirectDownloadGroupBox">Direct download</v:String>
+    <v:String x:Key="WindowTitle">AniLibria Downloader</v:String>
+    <v:String x:Key="SeriesLabel">Series:</v:String>
+    <v:String x:Key="QualityLabel">Quality:</v:String>
+    <v:String x:Key="DownloadButton">Download</v:String>
+    <!-- Torrent -->
+    <v:String x:Key="TorrentGroupBox">Torrent</v:String>
+</ResourceDictionary> 

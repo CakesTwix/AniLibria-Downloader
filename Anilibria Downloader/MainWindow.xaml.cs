@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,13 +83,88 @@ namespace Anilibria_Downloader
         public string NameTitle = "";
         public string NameTitleEN = "";
 
+        //Евент для оповещения всех окон приложения
+        public static event EventHandler LanguageChanged;
+
+        public static CultureInfo Language
+        {
+            get
+            {
+                return System.Threading.Thread.CurrentThread.CurrentUICulture;
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                if (value == System.Threading.Thread.CurrentThread.CurrentUICulture) return;
+
+                //1. Меняем язык приложения:
+                System.Threading.Thread.CurrentThread.CurrentUICulture = value;
+
+                //2. Создаём ResourceDictionary для новой культуры
+                ResourceDictionary dict = new ResourceDictionary();
+                switch (value.Name)
+                {
+                    case "ru-RU":
+                        dict.Source = new Uri(String.Format("Resources/lang.{0}.xaml", value.Name), UriKind.Relative);
+                        break;
+                    default:
+                        dict.Source = new Uri("Resources/lang.xaml", UriKind.Relative);
+                        break;
+                }
+
+                //3. Находим старую ResourceDictionary и удаляем его и добавляем новую ResourceDictionary
+                ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
+                                              where d.Source != null && d.Source.OriginalString.StartsWith("Resources/lang.")
+                                              select d).First();
+                if (oldDict != null)
+                {
+                    int ind = Application.Current.Resources.MergedDictionaries.IndexOf(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Remove(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Insert(ind, dict);
+                }
+                else
+                {
+                    Application.Current.Resources.MergedDictionaries.Add(dict);
+                }
+
+                //4. Вызываем евент для оповещения всех окон.
+                LanguageChanged(Application.Current, new EventArgs());
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
             //Программно нажимаю на кнопку рандома
             RandomTitle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            App.LanguageChanged += LanguageChanged;
+
+            CultureInfo currLang = App.Language;
+
+            //Заполняем меню смены языка:
+            LanguageMenuItem.Items.Clear();
+            foreach (var lang in App.Languages)
+            {
+                MenuItem menuLang = new MenuItem();
+                menuLang.Header = lang.DisplayName;
+                menuLang.Tag = lang;
+                menuLang.Click += ChangeLanguageClick;
+                LanguageMenuItem.Items.Add(menuLang);
+            }
         }
 
+        private void ChangeLanguageClick(Object sender, EventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            if (mi != null)
+            {
+                CultureInfo lang = mi.Tag as CultureInfo;
+                if (lang != null)
+                {
+                    App.Language = lang;
+                }
+            }
+
+        }
         public void ChangeImage(string poster)
         {
             //Меняем картинку
@@ -229,10 +306,10 @@ namespace Anilibria_Downloader
             if (qqq.Count != 0)
             {
                 progressSeries.IsIndeterminate = true;
-                Download_Name.IsEnabled = false;
+                DownloadButton.IsEnabled = false;
                 var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i http://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4");
                 Console.WriteLine(await p1.Run());
-                Download_Name.IsEnabled = true;
+                DownloadButton.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
 
             }
