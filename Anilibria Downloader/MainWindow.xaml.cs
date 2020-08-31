@@ -307,8 +307,9 @@ namespace Anilibria_Downloader
             {
                 progressSeries.IsIndeterminate = true;
                 DownloadButton.IsEnabled = false;
-                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i http://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4");
+                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":",""));
                 Console.WriteLine(await p1.Run());
+                //Console.WriteLine("ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
                 DownloadButton.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
 
