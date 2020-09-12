@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 
 namespace Anilibria_Downloader
@@ -78,8 +81,16 @@ namespace Anilibria_Downloader
         }
 
     }
+    public class Torrent
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Series { get; set; }
+        public string Quality { get; set; }
+    }
     public partial class MainWindow : Window
     {
+        
         public string NameTitle = "";
         public string NameTitleEN = "";
 
@@ -131,9 +142,10 @@ namespace Anilibria_Downloader
                 LanguageChanged(Application.Current, new EventArgs());
             }
         }
+        public ObservableCollection<Torrent> torrent { get; set; }
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent(); 
             //Программно нажимаю на кнопку рандома
             RandomTitle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             App.LanguageChanged += LanguageChanged;
@@ -165,6 +177,84 @@ namespace Anilibria_Downloader
             }
 
         }
+
+        private void ChangeAnime_JArray(JArray jsonAnime)
+        {
+            Console.WriteLine(jsonAnime);
+            NameTitle = jsonAnime[0]["names"]["ru"].ToString();
+            NameTitleEN = jsonAnime[0]["names"]["en"].ToString();
+            GroupTitleName.Text = NameTitle;
+            String Content = "Статус: " + jsonAnime[0]["status"]["string"] + "\n";
+            Content += "Серий: " + jsonAnime[0]["type"]["full_string"] + "\n";
+            Content += jsonAnime[0]["description"] + "\n";
+            Opicanie.Text = Content.ToString();
+            Series.Items.Clear();
+            QualityComboBox.Items.Clear();
+            if (jsonAnime[0]["player"]["playlist"]["1"]["hls"]["sd"].ToString() != "") QualityComboBox.Items.Add("SD");
+            if (jsonAnime[0]["player"]["playlist"]["1"]["hls"]["hd"].ToString() != "") QualityComboBox.Items.Add("HD");
+            if (jsonAnime[0]["player"]["playlist"]["1"]["hls"]["fhd"].ToString() != "") QualityComboBox.Items.Add("FHD");
+
+
+            for (int i = 0; i <= (int)jsonAnime[0]["type"]["series"]; i++)
+            {
+                Series.Items.Add(i+1); 
+            }
+            //SeriesListTorrentLabel.Content = jsonAnime["torrents"]["list"][0]["series"]["string"];
+            //SeriesListTorrentLabel.Content = jsonAnime[0]["torrents"]["list"][0]["series"]["string"].ToString();
+            ChangeImage(jsonAnime[0]["poster"]["url"].ToString());
+            Series.SelectedIndex = 0;
+            QualityComboBox.SelectedIndex = 0;
+            torrent = new ObservableCollection<Torrent>();
+            foreach (var Item in jsonAnime[0]["torrents"]["list"])
+            {
+                torrent.Add(new Torrent
+                {
+                    ID = (int)Item["torrent_id"],
+                    Name = Item["metadata"]["name"].ToString(),
+                    Series = Item["series"]["string"].ToString(),
+                    Quality = Item["quality"].ToString(),
+                });
+            }
+
+            Test.ItemsSource = torrent;
+        }
+        public void ChangeAnime_JObject(JObject jsonAnime)
+        {
+            NameTitle = jsonAnime["names"]["ru"].ToString();
+            NameTitleEN = jsonAnime["names"]["en"].ToString();
+            GroupTitleName.Text = NameTitle;
+            String Content = "Статус: " + jsonAnime["status"]["string"] + "\n";
+            Content += "Серий: " + jsonAnime["type"]["full_string"] + "\n";
+            Content += jsonAnime["description"] + "\n";
+            Opicanie.Text = Content.ToString();
+            Series.Items.Clear();
+            QualityComboBox.Items.Clear();
+            if (jsonAnime["player"]["playlist"]["1"]["hls"]["sd"].ToString() != "") QualityComboBox.Items.Add("SD");
+            if (jsonAnime["player"]["playlist"]["1"]["hls"]["hd"].ToString() != "") QualityComboBox.Items.Add("HD");
+            if (jsonAnime["player"]["playlist"]["1"]["hls"]["fhd"].ToString() != "") QualityComboBox.Items.Add("FHD");
+            if (torrent != null) torrent.Clear();
+            for (int i = 1; i <= (int)jsonAnime["type"]["series"]; i++)
+            {
+                Series.Items.Add(i);
+            }
+            //SeriesListTorrentLabel.Content = jsonAnime["torrents"]["list"][0]["series"]["string"];
+            ChangeImage(jsonAnime["poster"]["url"].ToString());
+            Series.SelectedIndex = 0;
+            QualityComboBox.SelectedIndex = 0;
+            torrent = new ObservableCollection<Torrent>();
+            foreach(var Item in jsonAnime["torrents"]["list"])
+            {
+                torrent.Add(new Torrent
+                {
+                    ID = (int)Item["torrent_id"],
+                    Name = Item["metadata"]["name"].ToString(),
+                    Series = Item["series"]["string"].ToString(),
+                    Quality = Item["quality"].ToString(),
+                });
+            }
+            
+            Test.ItemsSource = torrent;
+        }
         public void ChangeImage(string poster)
         {
             //Меняем картинку
@@ -176,63 +266,18 @@ namespace Anilibria_Downloader
         }
         public JObject GetRandom()
         {
-            try
-            {
                 WebClient wc = new System.Net.WebClient();
                 wc.Encoding = System.Text.Encoding.UTF8;
                 var json = wc.DownloadString("https://api.anilibria.tv/v2/getRandomTitle");
                 //Console.WriteLine(json);
                 return JObject.Parse(json);
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("Нету подключения к серверам Либрии");
-                var ErrorJson = new JObject();
-                ErrorJson.Add("error", e.ToString());
-                return ErrorJson;
-            }
-        } 
+        }
 
         //Метод, при нажатии кнопки рандома
         private void getRandom_Click(object sender, RoutedEventArgs e)
         {
-
-            try
-            {
-                JObject qqq = GetRandom();
-                if (qqq.ContainsKey("error"))
-                {
-
-                }
-                else
-                {
-                    NameTitle = qqq["names"]["ru"].ToString();
-                    NameTitleEN = qqq["names"]["en"].ToString();
-                    GroupTitleName.Text = NameTitle;
-                    String Content = "Статус: " + qqq["status"]["string"] + "\n";
-                    Content += "Серий: " + qqq["type"]["full_string"] + "\n";
-                    Content += qqq["description"] + "\n";
-                    Opicanie.Text = Content.ToString();
-                    Series.Items.Clear();
-                    QualityComboBox.Items.Clear();
-                    if (qqq["player"]["playlist"]["1"]["hls"]["sd"].ToString() != "") QualityComboBox.Items.Add("SD");
-                    if (qqq["player"]["playlist"]["1"]["hls"]["hd"].ToString() != "") QualityComboBox.Items.Add("HD");
-                    if (qqq["player"]["playlist"]["1"]["hls"]["fhd"].ToString() != "") QualityComboBox.Items.Add("FHD");
-
-
-                    for (int i = 1; i <= (int)qqq["type"]["series"]; i++)
-                    {
-                        Series.Items.Add(i);
-                    }
-                    ChangeImage(qqq["poster"]["url"].ToString());
-                    Series.SelectedIndex = 0;
-                    QualityComboBox.SelectedIndex = 0;
-                }
-            }
-            catch(WebException e1)
-            {
-                
-            }
+            JObject qqq = GetRandom();
+            ChangeAnime_JObject(qqq);
         }
 
         //Метод, ищущий тайтлы
@@ -272,30 +317,12 @@ namespace Anilibria_Downloader
             JArray qqq = JArray.Parse(json2);
             if (qqq.Count != 0)
             {
-                Console.WriteLine(qqq.ToString());
-                Series.Items.Clear();
-                SearchComboBox.Items.Clear();
-                NameTitle = qqq[0]["names"]["ru"].ToString();
-                NameTitleEN = qqq[0]["names"]["en"].ToString();
-                GroupTitleName.Text = NameTitle;
-                String Content = "Статус: " + qqq[0]["status"]["string"].ToString() + "\n";
-                Content += qqq[0]["description"] + "\n";
-                Opicanie.Text = Content.ToString();
-                ChangeImage(qqq[0]["poster"]["url"].ToString());
-                for (int i = 1; i <= (int)qqq[0]["player"]["series"]["last"]; i++)
-                {
-                    Series.Items.Add(i);
-                }
-                QualityComboBox.Items.Clear();
-                if (qqq[0]["player"]["playlist"]["1"]["hls"]["sd"].ToString() != "") QualityComboBox.Items.Add("SD");
-                if (qqq[0]["player"]["playlist"]["1"]["hls"]["hd"].ToString() != "") QualityComboBox.Items.Add("HD");
-                if (qqq[0]["player"]["playlist"]["1"]["hls"]["fhd"].ToString() != "") QualityComboBox.Items.Add("FHD");
-                QualityComboBox.SelectedIndex = 0;
-                Series.SelectedIndex = 0;
+                ChangeAnime_JArray(qqq);
             }
             
 
         }
+
         public async void Download(object sender, RoutedEventArgs e)
         {
             WebClient wc = new System.Net.WebClient();
@@ -313,12 +340,24 @@ namespace Anilibria_Downloader
                 DownloadButton.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
 
-            }
+            }   
+        }
+        public void DownloadTorrent(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+            if (button.DataContext is Torrent)
+            {
 
-               
+                Torrent deleteme = (Torrent)button.DataContext;
+                WebClient DownloadTorrent = new WebClient();
+                DownloadTorrent.DownloadFileAsync(new Uri("https://anilibria.tv/upload/torrents/" + deleteme.ID.ToString() + ".torrent")
+                    ,deleteme.ID.ToString()+".torrent");
+                Console.WriteLine("https:/anilibria.tv/upload/torrents/"+ deleteme.ID.ToString()+ ".torrent");
+
+            }
         }
 
-        private void AboutProgram_MenuItem(object sender, RoutedEventArgs e)
+            private void AboutProgram_MenuItem(object sender, RoutedEventArgs e)
         {
             AboutProgram aboutProgram = new AboutProgram();
             aboutProgram.ShowDialog();
