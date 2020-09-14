@@ -49,6 +49,8 @@
                                             <Label  Content="{Binding Path=Series}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,-25,0,0" />
                                             <Label  Content="{DynamicResource QualityLabel}" HorizontalAlignment="Left" VerticalAlignment="Top" />
                                             <Label  Content="{Binding Path=Quality}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55,-25,0,0" />
+                                            <Label  Content="{DynamicResource SizeLabel}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                            <Label  Content="{Binding Path=Size}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55,-25,0,0" />
                                                 <Button Width="100" Content="{DynamicResource DownloadButton}" Click="DownloadTorrent" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Top" Height="40"></Button>
                                             </StackPanel>
                                     </DataTemplate>

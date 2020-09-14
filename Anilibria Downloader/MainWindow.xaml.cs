@@ -87,6 +87,7 @@ namespace Anilibria_Downloader
         public string Name { get; set; }
         public string Series { get; set; }
         public string Quality { get; set; }
+        public string Size { get; set; }
     }
     public partial class MainWindow : Window
     {
@@ -151,7 +152,6 @@ namespace Anilibria_Downloader
             App.LanguageChanged += LanguageChanged;
 
             CultureInfo currLang = App.Language;
-
             //Заполняем меню смены языка:
             LanguageMenuItem.Items.Clear();
             foreach (var lang in App.Languages)
@@ -162,6 +162,22 @@ namespace Anilibria_Downloader
                 menuLang.Click += ChangeLanguageClick;
                 LanguageMenuItem.Items.Add(menuLang);
             }
+        }
+
+        public String ConvertSize(double size)
+        {
+            String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
+
+            double mod = 1024.0;
+
+            int i = 0;
+
+            while (size >= mod)
+            {
+                size /= mod;
+                i++;
+            }
+            return Math.Round(size, 2) + units[i];//with 2 decimals
         }
 
         private void ChangeLanguageClick(Object sender, EventArgs e)
@@ -250,6 +266,7 @@ namespace Anilibria_Downloader
                     Name = Item["metadata"]["name"].ToString(),
                     Series = Item["series"]["string"].ToString(),
                     Quality = Item["quality"].ToString(),
+                    Size = ConvertSize((double)Item["total_size"]),
                 });
             }
             

@@ -18,4 +18,5 @@
     <v:String x:Key="DownloadButton">Скачать</v:String>
     <!-- Torrent -->
     <v:String x:Key="TorrentGroupBox">Торрент</v:String>
+    <v:String x:Key="SizeLabel">Размер:</v:String>
 </ResourceDictionary>
