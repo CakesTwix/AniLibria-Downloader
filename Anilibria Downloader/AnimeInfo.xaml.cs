@@ -295,10 +295,11 @@ namespace Anilibria_Downloader
                 Torrent deleteme = (Torrent)button.DataContext;
                 WebClient DownloadTorrent = new WebClient();
                 DownloadTorrent.DownloadFileAsync(new Uri("https://anilibria.tv/upload/torrents/" + deleteme.ID.ToString() + ".torrent")
-                    , deleteme.ID.ToString() + ".torrent");
+                    , deleteme.Name.ToString().Replace(":", "_") + ".torrent");
                 Console.WriteLine("https:/anilibria.tv/upload/torrents/" + deleteme.ID.ToString() + ".torrent");
 
             }
         }
+
     }
 }
