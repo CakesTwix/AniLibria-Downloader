@@ -70,9 +70,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xabe.FFmpeg, Version=4.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xabe.FFmpeg.4.1.1\lib\netstandard2.0\Xabe.FFmpeg.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -83,12 +80,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AnimeInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="AboutProgram.xaml.cs">
       <DependentUpon>AboutProgram.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AnimeInfo.xaml.cs">
+      <DependentUpon>AnimeInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
