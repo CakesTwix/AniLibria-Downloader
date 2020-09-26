@@ -72,14 +72,6 @@
                 </GroupBox.Header>
                 <Image x:Name="ImageTitle" Margin="0,-4,0,0" MinWidth="242" MinHeight="424" Stretch="Fill" />
             </GroupBox>
-            <Menu x:Name="MenuGlobal" Height="25" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="2">
-                <MenuItem Header="{DynamicResource SettingsMenu}">
-                    <MenuItem x:Name="LanguageMenuItem" Header="{DynamicResource LanguageMenuItem}">
-
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="{DynamicResource AboutMenu}" Click="AboutProgram_MenuItem" />
-            </Menu>
             <Button Content="{DynamicResource SearchButton}" Grid.Column="2" HorizontalAlignment="Right" Margin="0,15,7,0" VerticalAlignment="Top" Width="68" Height="21" Click="Search"/>
         </Grid>
     </Grid>
