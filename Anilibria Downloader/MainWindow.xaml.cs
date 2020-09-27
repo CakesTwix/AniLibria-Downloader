@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -97,10 +98,17 @@ namespace Anilibria_Downloader
                 LanguageMenuItem.Items.Add(menuLang);
             }
         }
+
+
+
         private void AboutProgram_MenuItem(object sender, RoutedEventArgs e)
         {
             AboutProgram aboutProgram = new AboutProgram();
             aboutProgram.ShowDialog();
+        }
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
