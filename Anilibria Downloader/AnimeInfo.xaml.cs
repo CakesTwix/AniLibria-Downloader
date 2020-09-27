@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +28,7 @@ namespace Anilibria_Downloader
             _arguments = arguments;
         }
 
-        public async Task<string> Run(StringBuilder stdin = null)
+        public async Task<int> Run(StringBuilder stdin = null)
         {
 
             // Initialise
@@ -57,7 +58,7 @@ namespace Anilibria_Downloader
 
             // Wait for process to end and return stdout
             await cmdExited.Task;
-            return cmd.StandardOutput.ReadToEnd();
+            return cmd.ExitCode;
 
         }
 
@@ -279,11 +280,13 @@ namespace Anilibria_Downloader
                 progressSeries.IsIndeterminate = true;
                 DownloadButton.IsEnabled = false;
                 var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
-                Console.WriteLine(await p1.Run());
+                int result = await p1.Run();
                 //Console.WriteLine("ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
                 DownloadButton.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
-
+                MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+                if (result == 0) mainWindow.TaskbarLibria.ShowBalloonTip("Закачка заверщена", NameTitle, BalloonIcon.Info);
+                else mainWindow.TaskbarLibria.ShowBalloonTip("Упс.. Ошибка скачивания", NameTitle, BalloonIcon.Error);
             }
         }
         public void DownloadTorrent(object sender, RoutedEventArgs e)

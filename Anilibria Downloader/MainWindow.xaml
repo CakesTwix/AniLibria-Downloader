@@ -16,7 +16,7 @@
             <MenuItem Header="{DynamicResource AboutMenu}" Click="AboutProgram_MenuItem" />
         </Menu>
         <Frame x:Name="animelist" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
-        <tb:TaskbarIcon Visibility="Visible" IconSource="icon.ico" ToolTipText="AniLibria">
+        <tb:TaskbarIcon Visibility="Visible" IconSource="icon.ico" ToolTipText="AniLibria" x:Name="TaskbarLibria">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Получить обновления [WIP]"/>
