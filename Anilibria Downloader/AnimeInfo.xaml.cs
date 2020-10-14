@@ -154,13 +154,14 @@ namespace Anilibria_Downloader
                 torrent.Add(new Torrent
                 {
                     ID = (int)Item["torrent_id"],
-                    Name = Item["metadata"]["name"].ToString(),
+                    Name = NameTitleEN + " " + Item["quality"]["string"].ToString(),
                     Series = Item["series"]["string"].ToString(),
-                    Quality = Item["quality"].ToString(),
+                    Quality = Item["quality"]["string"].ToString(),
+                    Size = ConvertSize((double)Item["total_size"]),
                 });
             }
 
-            Test.ItemsSource = torrent;
+            TorrentsItem.ItemsSource = torrent;
         }
         public void ChangeAnime_JObject(JObject jsonAnime)
         {
@@ -191,14 +192,14 @@ namespace Anilibria_Downloader
                 torrent.Add(new Torrent
                 {
                     ID = (int)Item["torrent_id"],
-                    Name = Item["metadata"]["name"].ToString(),
+                    Name = NameTitleEN + " " + Item["quality"]["string"].ToString(),
                     Series = Item["series"]["string"].ToString(),
-                    Quality = Item["quality"].ToString(),
+                    Quality = Item["quality"]["string"].ToString(),
                     Size = ConvertSize((double)Item["total_size"]),
                 });
             }
 
-            Test.ItemsSource = torrent;
+            TorrentsItem.ItemsSource = torrent;
         }
         public void ChangeImage(string poster)
         {
