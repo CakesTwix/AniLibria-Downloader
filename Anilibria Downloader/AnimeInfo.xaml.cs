@@ -122,7 +122,7 @@ namespace Anilibria_Downloader
             return Math.Round(size, 2) + units[i];//with 2 decimals
         }
 
-        private void ChangeAnime_JArray(JArray jsonAnime)
+        public void ChangeAnime_JArray(JArray jsonAnime)
         {
             Console.WriteLine(jsonAnime);
             NameTitle = jsonAnime[0]["names"]["ru"].ToString();
