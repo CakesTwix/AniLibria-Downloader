@@ -1,4 +1,5 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
+﻿using Anilibria_Downloader.Models;
+using Hardcodet.Wpf.TaskbarNotification;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -82,14 +83,6 @@ namespace Anilibria_Downloader
         }
 
     }
-    public class Torrent
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Series { get; set; }
-        public string Quality { get; set; }
-        public string Size { get; set; }
-    }
     public partial class AnimeInfo : Page
     {
 
@@ -143,8 +136,6 @@ namespace Anilibria_Downloader
             {
                 Series.Items.Add(i + 1);
             }
-            //SeriesListTorrentLabel.Content = jsonAnime["torrents"]["list"][0]["series"]["string"];
-            //SeriesListTorrentLabel.Content = jsonAnime[0]["torrents"]["list"][0]["series"]["string"].ToString();
             ChangeImage(jsonAnime[0]["poster"]["url"].ToString());
             Series.SelectedIndex = 0;
             QualityComboBox.SelectedIndex = 0;
@@ -182,7 +173,6 @@ namespace Anilibria_Downloader
             {
                 Series.Items.Add(i);
             }
-            //SeriesListTorrentLabel.Content = jsonAnime["torrents"]["list"][0]["series"]["string"];
             ChangeImage(jsonAnime["poster"]["url"].ToString());
             Series.SelectedIndex = 0;
             QualityComboBox.SelectedIndex = 0;
@@ -231,13 +221,12 @@ namespace Anilibria_Downloader
         {
             SearchComboBox.Items.Clear();
             string SearchTitle = SearchComboBox.Text;
-            WebClient wc = new System.Net.WebClient();
-            wc.Encoding = System.Text.Encoding.UTF8;
+            WebClient wc = new WebClient();
+            wc.Encoding = Encoding.UTF8;
             try
             {
                 string json2 = wc.DownloadString("https://api.anilibria.tv/v2/searchTitles" + "?search=" + SearchTitle);
                 JArray qqq = JArray.Parse(json2);
-                //Console.WriteLine(qqq.Count);
                 for (int i = 0; i < qqq.Count; i++)
                 {
                     SearchComboBox.Items.Add(qqq[i]["names"]["ru"]);
@@ -257,33 +246,29 @@ namespace Anilibria_Downloader
         //Метод, вызывающейся при изменении итема в комбоБоксе
         void SearhComboBox_Click(object sender, SelectionChangedEventArgs args)
         {
-            WebClient wc = new System.Net.WebClient();
-            wc.Encoding = System.Text.Encoding.UTF8;
+            WebClient wc = new WebClient();
+            wc.Encoding = Encoding.UTF8;
             string json2 = wc.DownloadString("https://api.anilibria.tv/v2/searchTitles" + "?search=" + SearchComboBox.SelectedValue);
-            JArray qqq = JArray.Parse(json2);
-            if (qqq.Count != 0)
+            JArray SearchCombo = JArray.Parse(json2);
+            if (SearchCombo.Count != 0)
             {
-                ChangeAnime_JArray(qqq);
+                ChangeAnime_JArray(SearchCombo);
             }
-
-
         }
 
         public async void Download(object sender, RoutedEventArgs e)
         {
-            WebClient wc = new System.Net.WebClient();
-            wc.Encoding = System.Text.Encoding.UTF8;
+            WebClient wc = new WebClient();
+            wc.Encoding = Encoding.UTF8;
             string json2 = wc.DownloadString("https://api.anilibria.tv/v2/searchTitles" + "?search=" + NameTitle);
-            JArray qqq = JArray.Parse(json2);
+            JArray DownloadJson = JArray.Parse(json2);
 
-            if (qqq.Count != 0)
+            if (DownloadJson.Count != 0)
             {
                 progressSeries.IsIndeterminate = true;
                 DownloadButton.IsEnabled = false;
-                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
+                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i https://" + DownloadJson[0]["player"]["hosts"]["hls"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
                 int result = await p1.Run();
-                //Console.WriteLine("ffmpeg -i https://" + qqq[0]["player"]["hosts"]["hls"].ToString() + qqq[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
-                DownloadButton.IsEnabled = true;
                 progressSeries.IsIndeterminate = false;
                 MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
                 if (result == 0) mainWindow.TaskbarLibria.ShowBalloonTip("Закачка заверщена", NameTitle, BalloonIcon.Info);
@@ -295,7 +280,6 @@ namespace Anilibria_Downloader
             Button button = (Button)sender;
             if (button.DataContext is Torrent)
             {
-
                 Torrent deleteme = (Torrent)button.DataContext;
                 WebClient DownloadTorrent = new WebClient();
                 DownloadTorrent.DownloadFileAsync(new Uri("https://anilibria.tv/upload/torrents/" + deleteme.ID.ToString() + ".torrent")
