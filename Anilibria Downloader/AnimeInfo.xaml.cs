@@ -1,88 +1,18 @@
 ﻿using Anilibria_Downloader.Models;
+using Anilibria_Downloader.Utility;
 using Hardcodet.Wpf.TaskbarNotification;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using static Anilibria_Downloader.Utility.ffmpeg;
 
 namespace Anilibria_Downloader
 {
-    public class ProcessAsync
-    {
-
-        private string _fileName;
-        private string _arguments;
-
-        public ProcessAsync(string fileName, string arguments)
-        {
-            _fileName = fileName;
-            _arguments = arguments;
-        }
-
-        public async Task<int> Run(StringBuilder stdin = null)
-        {
-
-            // Initialise
-            var cmd = new Process();
-            cmd.StartInfo.FileName = _fileName;
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.StartInfo.Arguments = _arguments;
-
-            // Create a task that waits for the Process to finish
-            var cmdExited = new CmdExitedTaskWrapper();
-            cmd.EnableRaisingEvents = true;
-            cmd.Exited += cmdExited.EventHandler;
-
-            // Start process
-            cmd.Start();
-
-            // Pass any stdin if necessary
-            if (stdin != null)
-            {
-                await cmd.StandardInput.WriteAsync(stdin.ToString());
-                await cmd.StandardInput.FlushAsync();
-                cmd.StandardInput.Close();
-            }
-
-            // Wait for process to end and return stdout
-            await cmdExited.Task;
-            return cmd.ExitCode;
-
-        }
-
-        /// <remarks>
-        /// We can't wait on a Process directly, so create a wrapper for a
-        /// task that waits for the <see cref="Process.Exited"/> Event to be
-        /// raised.
-        /// </remarks>
-        private class CmdExitedTaskWrapper
-        {
-
-            private TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
-
-            public void EventHandler(object sender, EventArgs e)
-            {
-                _tcs.SetResult(true);
-            }
-
-            public Task Task => _tcs.Task;
-
-        }
-
-    }
     public partial class AnimeInfo : Page
     {
 
@@ -98,26 +28,8 @@ namespace Anilibria_Downloader
             //Программно нажимаю на кнопку рандома
             RandomTitle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
-
-        public String ConvertSize(double size)
-        {
-            String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
-
-            double mod = 1024.0;
-
-            int i = 0;
-
-            while (size >= mod)
-            {
-                size /= mod;
-                i++;
-            }
-            return Math.Round(size, 2) + units[i];//with 2 decimals
-        }
-
         public void ChangeAnime_JArray(JArray jsonAnime)
         {
-            Console.WriteLine(jsonAnime);
             NameTitle = jsonAnime[0]["names"]["ru"].ToString();
             NameTitleEN = jsonAnime[0]["names"]["en"].ToString();
             GroupTitleName.Text = NameTitle;
@@ -131,6 +43,7 @@ namespace Anilibria_Downloader
             if (jsonAnime[0]["player"]["playlist"]["1"]["hls"]["hd"].ToString() != "") QualityComboBox.Items.Add("HD");
             if (jsonAnime[0]["player"]["playlist"]["1"]["hls"]["fhd"].ToString() != "") QualityComboBox.Items.Add("FHD");
 
+            Convectors convectors = new Convectors();
 
             for (int i = 0; i <= (int)jsonAnime[0]["type"]["series"]; i++)
             {
@@ -148,7 +61,7 @@ namespace Anilibria_Downloader
                     Name = NameTitleEN + " " + Item["quality"]["string"].ToString(),
                     Series = Item["series"]["string"].ToString(),
                     Quality = Item["quality"]["string"].ToString(),
-                    Size = ConvertSize((double)Item["total_size"]),
+                    Size = convectors.ConvertSize((double)Item["total_size"]),
                 });
             }
 
@@ -173,6 +86,9 @@ namespace Anilibria_Downloader
             {
                 Series.Items.Add(i);
             }
+
+            Convectors convectors = new Convectors();
+
             ChangeImage(jsonAnime["poster"]["url"].ToString());
             Series.SelectedIndex = 0;
             QualityComboBox.SelectedIndex = 0;
@@ -185,7 +101,7 @@ namespace Anilibria_Downloader
                     Name = NameTitleEN + " " + Item["quality"]["string"].ToString(),
                     Series = Item["series"]["string"].ToString(),
                     Quality = Item["quality"]["string"].ToString(),
-                    Size = ConvertSize((double)Item["total_size"]),
+                    Size = convectors.ConvertSize((double)Item["total_size"]),
                 });
             }
 
