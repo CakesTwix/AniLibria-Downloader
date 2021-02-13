@@ -8,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -182,7 +183,6 @@ namespace Anilibria_Downloader
 
             if (DownloadJson.Count != 0)
             {
-                progressSeries.IsIndeterminate = true;
                 DownloadButton.IsEnabled = false;
 
                 var ffmpeg = new Engine("ffmpeg.exe");
@@ -193,13 +193,14 @@ namespace Anilibria_Downloader
 
                 string url = "https://" + DownloadJson[0]["player"]["hosts"]["hls"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString();
                 await ffmpeg.ExecuteAsync("-i " + url + " -c copy -y " + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
-                progressSeries.IsIndeterminate = false;
                 DownloadButton.IsEnabled = true;
             }
         }
         private void OnProgress(object sender, ConversionProgressEventArgs e)
         {
-            Console.WriteLine("ProcessedDuration: {0}", e.SizeKb);
+            Convectors convectors = new Convectors();
+            Dispatcher.BeginInvoke(new ThreadStart(delegate { SizeDownload.Content = convectors.ConvertSize(Convert.ToDouble(e.SizeKb * 1024)); }));
+            Dispatcher.BeginInvoke(new ThreadStart(delegate { TimeDownload.Content = e.ProcessedDuration; }));
         }
         private void OnComplete(object sender, ConversionCompleteEventArgs e)
         {
@@ -225,5 +226,9 @@ namespace Anilibria_Downloader
             }
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

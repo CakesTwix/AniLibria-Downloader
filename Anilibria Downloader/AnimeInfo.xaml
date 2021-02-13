@@ -31,17 +31,21 @@
                 </TabItem>
                 <TabItem Header="{DynamicResource DownloadTabItem}">
                     <Grid Background="#FFE5E5E5">
-                        <GroupBox Header="{DynamicResource DirectDownloadGroupBox}" Height="122" Margin="8,7,0,0" VerticalAlignment="Top" MinWidth="478">
+                        <GroupBox Header="{DynamicResource DirectDownloadGroupBox}" Height="156" Margin="0,7,0,0" VerticalAlignment="Top" MinWidth="478">
                             <Grid Height="103" VerticalAlignment="Top">
-                                <Button x:Name="DownloadButton" Content="{DynamicResource DownloadButton}" HorizontalAlignment="Right" Margin="0,0,55,43" VerticalAlignment="Bottom" Width="92" Height="20" Click="Download"/>
+                                <Button x:Name="DownloadButton" Content="{DynamicResource DownloadButton}" HorizontalAlignment="Right" Margin="0,0,10,-21" VerticalAlignment="Bottom" Width="92" Height="20" Click="Download" RenderTransformOrigin="0.75,2.3"/>
                                 <ComboBox x:Name="Series" HorizontalAlignment="Left" Margin="6,39,0,0" VerticalAlignment="Top" Width="120" />
                                 <Label x:Name="SeriesLabel" Content="{DynamicResource SeriesLabel}" HorizontalAlignment="Left" Margin="6,9,0,0" VerticalAlignment="Top" />
-                                <Label x:Name="QualityLabel" Content="{DynamicResource QualityLabel}" HorizontalAlignment="Left" Margin="159,9,0,0" VerticalAlignment="Top" />
-                                <ComboBox x:Name="QualityComboBox" HorizontalAlignment="Left" Margin="162,39,0,0" VerticalAlignment="Top" Width="120" />
-                                <ProgressBar x:Name="progressSeries" Height="11" Margin="6,70,13,0" VerticalAlignment="Top" MinHeight="17" MinWidth="443"/>
+                                <Label x:Name="QualityLabel" Content="{DynamicResource QualityLabel}" HorizontalAlignment="Left" Margin="6,67,0,0" VerticalAlignment="Top" />
+                                <ComboBox x:Name="QualityComboBox" HorizontalAlignment="Left" Margin="9,97,0,-16" VerticalAlignment="Top" Width="120" />
+                                <Label Content="{DynamicResource TimeLabel}" HorizontalAlignment="Right" Margin="0,10,101,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                                <Label Content="{DynamicResource SizeLabel}" HorizontalAlignment="Right" Margin="0,35,100,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                                <Label HorizontalAlignment="Right" Margin="0,10,0,0" VerticalAlignment="Top" x:Name="TimeDownload"/>
+                                <Label HorizontalAlignment="Right" Margin="0,35,40,0" VerticalAlignment="Top" x:Name="SizeDownload"/>
+
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="{DynamicResource TorrentGroupBox}" Margin="8,126,1,0" MinWidth="478" MinHeight="253" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <GroupBox Header="{DynamicResource TorrentGroupBox}" Margin="0,168,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <Grid>
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <ItemsControl x:Name="TorrentsItem" ScrollViewer.VerticalScrollBarVisibility="Auto">

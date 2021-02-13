@@ -19,4 +19,5 @@
     <!-- Torrent -->
     <v:String x:Key="TorrentGroupBox">Торрент</v:String>
     <v:String x:Key="SizeLabel">Размер:</v:String>
+    <v:String x:Key="TimeLabel">Время:</v:String>
 </ResourceDictionary>
