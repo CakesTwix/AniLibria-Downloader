@@ -53,6 +53,9 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FFmpeg.NET, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xFFmpeg.NET.3.4.0\lib\netstandard2.0\FFmpeg.NET.dll</HintPath>
+    </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>

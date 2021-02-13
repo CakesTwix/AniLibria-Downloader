@@ -1,5 +1,7 @@
 ﻿using Anilibria_Downloader.Models;
 using Anilibria_Downloader.Utility;
+using FFmpeg.NET;
+using FFmpeg.NET.Events;
 using Hardcodet.Wpf.TaskbarNotification;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,7 +11,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using static Anilibria_Downloader.Utility.ffmpeg;
 
 namespace Anilibria_Downloader
 {
@@ -183,13 +184,32 @@ namespace Anilibria_Downloader
             {
                 progressSeries.IsIndeterminate = true;
                 DownloadButton.IsEnabled = false;
-                var p1 = new ProcessAsync("cmd.exe", "/C ffmpeg -i https://" + DownloadJson[0]["player"]["hosts"]["hls"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString() + " -n -c copy file:" + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
-                int result = await p1.Run();
+
+                var ffmpeg = new Engine("ffmpeg.exe");
+
+                ffmpeg.Progress += OnProgress;
+                ffmpeg.Error += OnError;
+                ffmpeg.Complete += OnComplete;
+
+                string url = "https://" + DownloadJson[0]["player"]["hosts"]["hls"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString();
+                await ffmpeg.ExecuteAsync("-i " + url + " -c copy -y " + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
                 progressSeries.IsIndeterminate = false;
-                MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-                if (result == 0) mainWindow.TaskbarLibria.ShowBalloonTip("Закачка заверщена", NameTitle, BalloonIcon.Info);
-                else mainWindow.TaskbarLibria.ShowBalloonTip("Упс.. Ошибка скачивания", NameTitle, BalloonIcon.Error);
+                DownloadButton.IsEnabled = true;
             }
+        }
+        private void OnProgress(object sender, ConversionProgressEventArgs e)
+        {
+            Console.WriteLine("ProcessedDuration: {0}", e.SizeKb);
+        }
+        private void OnComplete(object sender, ConversionCompleteEventArgs e)
+        {
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.TaskbarLibria.ShowBalloonTip("Закачка заверщена", NameTitle, BalloonIcon.Info);
+        }
+        private void OnError(object sender, ConversionErrorEventArgs e)
+        {
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.TaskbarLibria.ShowBalloonTip("Закачка заверщена", NameTitle, BalloonIcon.Info);
         }
         public void DownloadTorrent(object sender, RoutedEventArgs e)
         {
