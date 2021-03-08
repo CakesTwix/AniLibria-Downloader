@@ -9,6 +9,6 @@
         Title="О программе" Height="300" Width="300" MinWidth="300" MinHeight="300" MaxWidth="300" MaxHeight="300" Background="White" WindowStyle="ToolWindow">
     <Grid HorizontalAlignment="Left" Height="300" VerticalAlignment="Top" Width="300" RenderTransformOrigin="0.149,0.143">
         <Image RenderTransformOrigin="-0.405,0.38" VerticalAlignment="Top" Margin="20,42,20,0" Source="res/anilibria.png" Height="92"/>
-        <TextBlock HorizontalAlignment="Left" Margin="24,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="98" Width="240" TextAlignment="Center"><Bold><Run Text="Anilibria Downloader"/></Bold><LineBreak/><Run Text="by CakesTwix"/><LineBreak/><LineBreak/><LineBreak/><Run FontWeight="Bold" Text="ver 0.0.0.3 Alpha"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="24,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="98" Width="240" TextAlignment="Center"><Bold><Run Text="Anilibria Downloader"/></Bold><LineBreak/><Run Text="by CakesTwix"/><LineBreak/><LineBreak/><LineBreak/><Run FontWeight="Bold" Text="ver 0.0.0."/><Run FontWeight="Bold" Text="4"/><Run FontWeight="Bold" Text=" Alpha"/></TextBlock>
     </Grid>
 </Window>
