@@ -191,7 +191,7 @@ namespace Anilibria_Downloader
                 ffmpeg.Error += OnError;
                 ffmpeg.Complete += OnComplete;
 
-                string url = "https://" + DownloadJson[0]["player"]["hosts"]["hls"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString();
+                string url = "https://" + DownloadJson[0]["player"]["host"].ToString() + DownloadJson[0]["player"]["playlist"][Series.SelectedItem.ToString()]["hls"][QualityComboBox.SelectedValue.ToString().ToLower()].ToString();
                 await ffmpeg.ExecuteAsync("-i " + url + " -c copy -y " + (NameTitleEN.Replace(" ", "_") + "_" + Series.SelectedValue + "_" + QualityComboBox.SelectedValue + ".mp4").Replace(":", ""));
                 DownloadButton.IsEnabled = true;
             }
